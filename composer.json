@@ -1,0 +1,19 @@
+{
+    "name": "waljqiang/mqtt",
+    "description": "a simple client for mqtt",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "waljqiang",
+            "email": "waljqiang@163.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4":{
+            "Nova\\Mqtt\\": "src/"
+        }
+    }
+}
