@@ -10,7 +10,9 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "monolog/monolog": "^1.24.0"
+    },
     "autoload": {
         "psr-4":{
             "Nova\\Mqtt\\": "src/"
