@@ -58,17 +58,17 @@ class Mqtt {
         $this->options = $this->arrayToObject(array_intersect_key($options,$this->options));
         $this->parameters->address = gethostbyname($this->parameters->address);
         $this->logger = new Logger('novamqtt');
-        $this->logger->pushHandler(new StreamHandler('./runtime/'.date('Ymd') . '.log',\Monolog\Logger::DEBUG));
-        $this->connect();
+        $this->logger->pushHandler(new StreamHandler("/vagrant/mqtt/runtime/ ". date("Ymd") . ".log",\Monolog\Logger::DEBUG));
     }
 
     /* connects to the broker
         inputs: $clean: should the client send a clean session flag */
-    private function connect(){
+    public function connect(){
         $this->socket = @fsockopen($this->parameters->address, $this->parameters->port, $errno, $errstr,$this->options->timeout);
 
         if (!$this->socket ) {
-        	throw new \Exception("$errstr",$errno);
+            if($this->debug) $this->logger->debug("connect: code->$errno msg->$errstr");
+        	return false;
         }
 
         stream_set_timeout($this->socket, $this->options->timeout);
@@ -129,8 +129,10 @@ class Mqtt {
 
         if(ord($string{0})>>4 == 2 && $string{3} == chr(0)){
             //连接成功
+            if($this->debug) $this->logger->debug('connected success');
         }else{
-        	throw new \Exception(sprintf("Connection failed! (Error: 0x%02x 0x%02x)\n",ord($string{0}),ord($string{3})),500);
+            if($this->debug) $this->logger->debug(sprintf("Connection failed! (Error: 0x%02x 0x%02x)\n",ord($string{0}),ord($string{3})));
+            return false;
         }
 
         $this->timesinceping = time();
@@ -275,6 +277,7 @@ class Mqtt {
 						}
 						//var_dump($len);
 						if ($len < 2) {
+                            $this->debug && $this->logger->debug("publish failure qos->$qos,len->$len");
 							$result = false;
 						} else {
 							if(function_exists($puback)){
@@ -282,6 +285,7 @@ class Mqtt {
 							}
 						}
 					} else {
+                        $this->debug && $this->logger->debug("publish failure qos->$qos");
 						$result = false;
 					}
 				}
