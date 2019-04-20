@@ -4,11 +4,18 @@ use Nova\Mqtt\Mqtt;
 
 try{
 	$mqtt = new Mqtt($config['clientid'],$config['parameters'],$config['options']);
-	$mqtt->connect();
-	$rs = $mqtt->publish('abc','111');
+	$rs = $mqtt->subscribe(['abc' => [
+		'qos' => 0,
+		'function' => 'callback'
+	]],'callback');
 	var_dump($mqtt);
 	var_dump($rs);
-	$mqtt->close();
 }catch(\Exception $e){
 	var_dump($e);
+}
+
+function callback($topic,$msg){
+	echo "Msg Recieved: " . date("r") . "\n";
+	echo "Topic: {$topic}\n\n";
+	echo "\t$msg\n\n";
 }
