@@ -58,7 +58,7 @@ class Mqtt {
         $this->options = $this->arrayToObject(array_intersect_key($options,$this->options));
         $this->parameters->address = gethostbyname($this->parameters->address);
         $this->logger = new Logger('novamqtt');
-        $this->logger->pushHandler(new StreamHandler('./runtime/'.date('Ymd').log,Monolog\Logger::DEBUG));
+        $this->logger->pushHandler(new StreamHandler('./runtime/'.date('Ymd') . '.log',\Monolog\Logger::DEBUG));
         $this->connect();
     }
 
