@@ -1,5 +1,7 @@
 <?php
 namespace Nova\Mqtt;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 /* phpMQTT */
 class Mqtt {
@@ -9,6 +11,8 @@ class Mqtt {
     protected $timesinceping;      /* host unix time, used to detect disconects */
     public $topics = array();   /* used to store currently subscribed topics */
     protected $clientid;           /* client id sent to brocker */
+    public $debug = false;
+    private $logger;
 
     private $parameters = [
     	'address' => '127.0.0.1',
@@ -53,6 +57,8 @@ class Mqtt {
     	$this->parameters = $this->arrayToObject(array_intersect_key($parameters,$this->parameters));
         $this->options = $this->arrayToObject(array_intersect_key($options,$this->options));
         $this->parameters->address = gethostbyname($this->parameters->address);
+        $this->logger = new Logger('novamqtt');
+        $this->logger->pushHandler(new StreamHandler('./runtime/'.date('Ymd').log,Monolog\Logger::DEBUG));
         $this->connect();
     }
 
