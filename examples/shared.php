@@ -6,8 +6,8 @@ $config = [
 	'parameters' => [
 		'address' => '192.168.33.10',
 	    'port' => 1883,
-	    'username' => '',
-	    'password' => ''
+	    'username' => 'admin',
+	    'password' => '726215'
 	],
     'options' => [
     	'clean' => true,
