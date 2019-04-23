@@ -159,6 +159,7 @@ class Mqtt {
 
     /* subscribe: subscribes to topics */
     public function subscribe($topics,$subback = null,$qos = 0){
+        $rs = true;
         $i = 0;
         $buffer = "";
         $id = $this->msgid;
@@ -188,24 +189,30 @@ class Mqtt {
         //$string = $this->read($bytes);
 
 		$hdr = $this->read_fixed_header();
-		if (!$hdr) {
-			$this->result = 403502;
+		if (!$hdr && $this->debug) {
+            $this->logger->debug('Subscribe request failed, no response from broker!');
+            $rs = false;
 		} else {
 			if ($hdr['mtype'] == $this->operations['MQTT_SUBACK']) {
-            $len = $this->read_remaining_length();
-            if ($len > 0) {
-                //$response =$this->read($len);
-                if(function_exists($subback)){
-							call_user_func($subback,$topname);
-					}
-            }
-            if ($len < 3) {
-                $this->result = 403503;
-            }
+                $len = $this->read_remaining_length();
+                if ($len > 0) {
+                    //$response =$this->read($len);
+                    if(function_exists($subback)){
+    							call_user_func($subback,$topname);
+    					}
+                }
+                if ($len < 3 && $this->debug) {
+                    $this->logger->debug('Subscribe request failed, incorrect length response received!');
+                    $rs = false;
+                }
 			} else {
-				$this->result = 403504;
+				if($this->debug){
+                    $this->logger->debug('SAMConnection_MQTT.Subscribe() subscribe failed response');
+                    $rs = false;
+                }
 			}
 		}
+        return $rs;
     }
 
     /* ping: sends a keep alive ping */
@@ -214,7 +221,8 @@ class Mqtt {
         $head = chr(0xc0);
         $head .= chr(0x00);
         fwrite($this->socket, $head, 2);
-        Log::write("DEBUG","ping sent\n","mqtt");
+        if($this->debug)
+            $this->logger->debug("ping sent");
     }
 
     /* disconnect: sends a proper disconect cmd */
@@ -355,7 +363,8 @@ class Mqtt {
             }
         }
         if(!$found){
-            Log::write("DEBUG","msg recieved but no match in subscriptions\n","mqtt");
+            if($this->debug)
+                $this->logger->debug("msg recieved but no match in subscriptions");
         }
     }
 
@@ -370,7 +379,8 @@ class Mqtt {
 
                 //$byte = fgetc($this->socket);
             if(feof($this->socket)){
-                Log::write("DEBUG","eof receive going to reconnect for good measure\n","mqtt");
+                if($this->debug)
+                    $this->logger->debug("eof receive going to reconnect for good measure");
                 fclose($this->socket);
                 $this->connect(false);
                 if(count($this->topics))
@@ -387,7 +397,8 @@ class Mqtt {
             }else{
 
                 $cmd = (int)(ord($byte)/16);
-                Log::write("DEBUG","Recevid: $cmd\n","mqtt");
+                if($this->debug)
+                    $this->logger->debug("Recevid: $cmd");
                 $multiplier = 1;
                 $value = 0;
                 do{
@@ -395,8 +406,8 @@ class Mqtt {
                     $value += ($digit & 127) * $multiplier;
                     $multiplier *= 128;
                     }while (($digit & 128) != 0);
-                Log::write("DEBUG","Fetching: $value\n","mqtt");
-
+                if($this->debug)
+                    $this->logger->debug("Fetching: $value");
                 if($value)
                     $string = $this->read($value,"fetch");
 
@@ -411,14 +422,16 @@ class Mqtt {
                 }
             }
 
-            if($this->timesinceping < (time() - $this->keepalive )){
-                Log::write("DEBUG","not found something so ping\n","mqtt");
+            if($this->timesinceping < (time() - $this->options->keepalive )){
+                if($this->debug)
+                    $this->logger->debug("Not found something so ping");
                 $this->ping();
             }
 
 
-            if($this->timesinceping<(time()-($this->keepalive*2))){
-                Log::write("DEBUG","not seen a package in a while, disconnecting\n","mqtt");
+            if($this->timesinceping<(time()-($this->options->keepalive*2))){
+                if($this->debug)
+                    $this->logger->debug("Not seen a package in a while, disconnecting");
                 fclose($this->socket);
                 $this->connect(false);
                 if(count($this->topics))

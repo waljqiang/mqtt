@@ -7,9 +7,16 @@ try{
 	$mqtt->debug = true;
 	if(!$mqtt->connect())
 		exit(-1);
-	$rs = $mqtt->publish('abc','111');
-	var_dump($mqtt);
-	var_dump($rs);
+	$mqtt->subscribe(['abc' => ['qos'=>0,'function' => 'procmsg']]);
+	/*while($mqtt->proc()){
+
+	}*/
+	$mqtt->proc();
 }catch(\Exception $e){
 	var_dump($e);
+}
+
+function procmsg($topic,$msg){
+	var_dump($topic);
+	var_dump($msg);
 }
