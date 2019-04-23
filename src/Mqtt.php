@@ -52,13 +52,14 @@ class Mqtt {
 	    'MQTT_DISCONNECT' => 14
 	];
 
-    public function __construct($clientid,$parameters = [],$options = []){
+    public function __construct($clientid,$parameters = [],$options = [],$logPath = ''){
     	$this->clientid = $clientid;
     	$this->parameters = $this->arrayToObject(array_intersect_key($parameters,$this->parameters));
         $this->options = $this->arrayToObject(array_intersect_key($options,$this->options));
         $this->parameters->address = gethostbyname($this->parameters->address);
+        $logPath = !empty($logPath) ? $logPath : __DIR__ . "/../runtime/" . date("Ymd") . ".log";
         $this->logger = new Logger('novamqtt');
-        $this->logger->pushHandler(new StreamHandler("/vagrant/mqtt/runtime/ ". date("Ymd") . ".log",\Monolog\Logger::DEBUG));
+        $this->logger->pushHandler(new StreamHandler($logPath,\Monolog\Logger::DEBUG));
     }
 
     /* connects to the broker
@@ -303,7 +304,6 @@ class Mqtt {
 
 			  }
 		}
-		$this->close();
 		return $result;
 
     }
@@ -356,7 +356,7 @@ class Mqtt {
                         str_replace("/","\/",
                             str_replace("$",'\$',
                                 $key))))."$/",$topic) ){
-                if(function_exists($top['function'])){
+                if($top['function'] instanceof \Closure || function_exists($top['function'])){
                     call_user_func($top['function'],$topic,$msg);
                     $found = 1;
                 }
@@ -421,7 +421,6 @@ class Mqtt {
                     $this->timesinceping = time();
                 }
             }
-
             if($this->timesinceping < (time() - $this->options->keepalive )){
                 if($this->debug)
                     $this->logger->debug("Not found something so ping");

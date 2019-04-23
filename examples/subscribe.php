@@ -4,14 +4,14 @@ use Nova\Mqtt\Mqtt;
 
 try{
 	$mqtt = new Mqtt($config['clientid'],$config['parameters'],$config['options']);
-	$mqtt->debug = true;
+	//$mqtt->debug = true;
 	if(!$mqtt->connect())
 		exit(-1);
 	$mqtt->subscribe(['abc' => ['qos'=>0,'function' => 'procmsg']]);
-	/*while($mqtt->proc()){
+	while($mqtt->proc()){
 
-	}*/
-	$mqtt->proc();
+	}
+	$mqtt->close();
 }catch(\Exception $e){
 	var_dump($e);
 }
