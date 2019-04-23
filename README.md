@@ -32,6 +32,7 @@ try{
 ```
 
 ## 订阅
+
 require_once __DIR__ .'/shared.php';
 use Nova\Mqtt\Mqtt;
 
