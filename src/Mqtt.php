@@ -128,7 +128,7 @@ class Mqtt {
 
         $string = $this->read(4);
 
-        if(ord($string{0})>>4 == 2 && $string{3} == chr(0)){
+        if(strlen($string) > 3 && ord($string{0})>>4 == 2 && $string{3} == chr(0)){
             //连接成功
             if($this->debug) $this->logger->debug('connected success');
         }else{
