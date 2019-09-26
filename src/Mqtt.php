@@ -52,8 +52,7 @@ class Mqtt {
 	    'MQTT_DISCONNECT' => 14
 	];
 
-    public function __construct($clientid,$parameters = [],$options = [],$logPath = ''){
-    	$this->clientid = $clientid;
+    public function __construct($parameters = [],$options = [],$logPath = ''){
     	$this->parameters = $this->arrayToObject(array_intersect_key($parameters,$this->parameters));
         $this->options = $this->arrayToObject(array_intersect_key($options,$this->options));
         $this->parameters->address = gethostbyname($this->parameters->address);
@@ -64,7 +63,8 @@ class Mqtt {
 
     /* connects to the broker
         inputs: $clean: should the client send a clean session flag */
-    public function connect(){
+    public function connect($clientID){
+        $this->clientid = $clientID;
         $this->socket = @fsockopen($this->parameters->address, $this->parameters->port, $errno, $errstr,$this->options->timeout);
 
         if (!$this->socket ) {
