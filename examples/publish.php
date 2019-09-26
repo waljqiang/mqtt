@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ .'/shared.php';
-use Nova\Mqtt\Mqtt;
+use Waljqiang\Mqtt\Mqtt;
 
 try{
 	$mqtt = new Mqtt($config['parameters'],$config['options']);

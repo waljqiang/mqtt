@@ -1,5 +1,5 @@
 <?php
-namespace Nova\Mqtt;
+namespace Waljqiang\Mqtt;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
@@ -57,7 +57,7 @@ class Mqtt {
         $this->options = $this->arrayToObject(array_intersect_key($options,$this->options));
         $this->parameters->address = gethostbyname($this->parameters->address);
         $logPath = !empty($logPath) ? $logPath : __DIR__ . "/../runtime/" . date("Ymd") . ".log";
-        $this->logger = new Logger('novamqtt');
+        $this->logger = new Logger('Waljqiangmqtt');
         $this->logger->pushHandler(new StreamHandler($logPath,\Monolog\Logger::DEBUG));
     }
 

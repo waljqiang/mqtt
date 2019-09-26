@@ -16,7 +16,7 @@ $mqtt->debug = true;
 
 ```
 require_once __DIR__ .'/shared.php';
-use Nova\Mqtt\Mqtt;
+use Waljqiang\Mqtt\Mqtt;
 
 try{
     $mqtt = new Mqtt($config['parameters'],$config['options']);
@@ -34,7 +34,7 @@ try{
 ## 订阅
 
 require_once __DIR__ .'/shared.php';
-use Nova\Mqtt\Mqtt;
+use Waljqiang\Mqtt\Mqtt;
 
 try{
     $mqtt = new Mqtt($config['parameters'],$config['options']);
@@ -70,7 +70,7 @@ function procmsg($topic,$msg){
 
     ```
     require_once __DIR__ .'/shared.php';
-    use Nova\Mqtt\Mqtt;
+    use Waljqiang\Mqtt\Mqtt;
 
     try{
         $mqtt = new Mqtt($config['parameters'],$config['options']);

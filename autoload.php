@@ -11,4 +11,4 @@
 
 require __DIR__.'/src/Autoloader.php';
 
-Nova\Mqtt\Autoloader::register();
+Waljqiang\Mqtt\Autoloader::register();

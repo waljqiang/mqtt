@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Nova\Mqtt;
+namespace Waljqiang\Mqtt;
 
 class Autoloader{
     private $directory;

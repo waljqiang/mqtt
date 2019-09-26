@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4":{
-            "Nova\\Mqtt\\": "src/"
+            "Waljqiang\\Mqtt\\": "src/"
         }
     }
 }
